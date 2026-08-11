@@ -6,13 +6,11 @@ Licensed MIT, see [LICENSE](LICENSE).
 
 ## Skills in this repo
 
-| Skill | What it does |
-| --- | --- |
-| [`server-rendered-web`](server-rendered-web/SKILL.md) | Build pragmatic server-rendered interfaces with semantic HTML, modern CSS, Open Props, HTMX and Alpine.js, while respecting whatever stack a project already has. |
-| [`agent-integration-design`](agent-integration-design/SKILL.md) | Pick the right boundary for exposing functionality to agents. CLI for local tooling, HTTP API for application services, MCP only where it earns its keep. |
-| [`mcp-server-builder`](mcp-server-builder/SKILL.md) | Build remote MCP servers in Go over Streamable HTTP, as real production services rather than local command wrappers. |
-| [`html-document`](html-document/SKILL.md) | Print-first HTML documents that export cleanly to PDF: proposals, quotes, reports, letters. Ships a neutral template. |
-| [`html-presentation`](html-presentation/SKILL.md) | Editorial or cinematic reveal.js decks as one self-contained HTML file. Ships a neutral template. |
+- [`server-rendered-web`](server-rendered-web/SKILL.md): Semantic HTML, modern CSS, Open Props, HTMX, and Alpine.js, while respecting the stack a project already has.
+- [`agent-integration-design`](agent-integration-design/SKILL.md): CLI for local tooling, HTTP API for services, MCP only where it earns its keep.
+- [`mcp-server-builder`](mcp-server-builder/SKILL.md): Build remote MCP servers in Go over Streamable HTTP, as real production services rather than local command wrappers.
+- [`html-document`](html-document/SKILL.md): Print-first HTML documents that export cleanly to PDF: proposals, quotes, reports, letters. Ships a neutral template.
+- [`html-presentation`](html-presentation/SKILL.md): Editorial or cinematic reveal.js decks as one self-contained HTML file. Ships a neutral template.
 
 `agent-integration-design` decides whether to build an MCP server at all;
 `mcp-server-builder` takes over once that decision is made.
