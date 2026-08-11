@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{DECK_TITLE}}</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.css">
+
+<style>
+/* ==========================================================================
+   BRAND CONTRACT
+   This block is the whole extension point. To brand this deck, replace these
+   values and change nothing else. Defaults are deliberately neutral: usable,
+   but not anyone's house style.
+   ========================================================================== */
+:root {
+  /* Canvas (dark cinematic default) */
+  --canvas:      #0b0e14;
+  --canvas-2:    #121826;
+  --panel:       rgba(255, 255, 255, .045);
+  --hairline:    rgba(255, 255, 255, .12);
+
+  /* Two primaries drive glows, gradient text, and kickers */
+  --primary-1:   #3b82f6;
+  --primary-2:   #22d3ee;
+
+  /* Ink on the canvas */
+  --ink:         #f2f5f9;
+  --ink-muted:   #97a3b6;
+
+  /* Type. A system stack is the safe default: no network dependency, and it
+     cannot silently fall back to Times on a headless host. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+}
+
+/* LIGHT EDITORIAL VARIANT
+   Add class="light" to <body> and these take over. Better for board decks and
+   anything that will be printed.
+   ------------------------------------------------------------------------ */
+body.light {
+  --canvas:    #fbfbfa;
+  --canvas-2:  #f2f3f5;
+  --panel:     rgba(0, 0, 0, .035);
+  --hairline:  rgba(0, 0, 0, .12);
+  --ink:       #15181d;
+  --ink-muted: #5a6472;
+}
+
+/* ==========================================================================
+   CANVAS + BACKDROP
+   ========================================================================== */
+html, body { background: var(--canvas); }
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(60% 55% at 12% 12%,
+      color-mix(in srgb, var(--primary-1) 26%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 88% 82%,
+      color-mix(in srgb, var(--primary-2) 20%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--canvas), var(--canvas-2));
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Faint grid, masked so it fades out at the edges. */
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: .30;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 100%);
+          mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 100%);
+}
+
+.reveal-viewport { background: transparent; }
+
+/* ==========================================================================
+   TYPE
+   Reveal core sets no base family. Without this on .reveal AND on the
+   headings, the whole deck silently renders in Times.
+   ========================================================================== */
+.reveal { font-family: var(--font-sans); color: var(--ink); font-size: 30px; }
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  text-transform: none;        /* reveal uppercases headings by default */
+  letter-spacing: -.02em;
+  line-height: 1.12;
+  margin: 0 0 .4em;
+  text-shadow: none;
+}
+
+.reveal h1 { font-size: 2.5em;  font-weight: 660; }
+.reveal h2 { font-size: 1.62em; font-weight: 640; }
+.reveal h3 { font-size: 1.05em; font-weight: 620; }
+
+.reveal p { line-height: 1.5; margin: 0 0 .7em; }
+.reveal strong { color: var(--ink); font-weight: 640; }
+.reveal a { color: var(--primary-2); text-decoration: none; }
+
+.reveal .slides section { text-align: left; }
+
+.muted { color: var(--ink-muted); }
+.small { font-size: .72em; }
+
+/* Gradient clip-text.
+   Two non-obvious requirements: fit-content, or a full-width block shows only
+   the leftmost slice of the gradient and reads as one flat colour; and extra
+   line-height plus padding, or descenders get clipped. */
+.grad {
+  display: inline-block;
+  width: fit-content;
+  background: linear-gradient(100deg, var(--primary-1), var(--primary-2));
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.22;
+  padding-bottom: .08em;
+}
+
+/* ==========================================================================
+   KICKER
+   ========================================================================== */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: .7em;
+  font-family: var(--font-mono);
+  font-size: .5em;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--primary-2);
+  margin: 0 0 1.1em;
+}
+
+.kicker::after {
+  content: "";
+  width: 3.2em;
+  height: 1px;
+  background: currentColor;
+  opacity: .5;
+}
+
+/* ==========================================================================
+   CARDS, STATS, PILLS, NOTES
+   ========================================================================== */
+.cards { display: grid; gap: .62em; margin: .5em 0; }
+.cards.c2 { grid-template-columns: repeat(2, 1fr); }
+.cards.c3 { grid-template-columns: repeat(3, 1fr); }
+.cards.c4 { grid-template-columns: repeat(4, 1fr); }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: .8em .9em;
+}
+.card h3 { font-size: .68em; margin: 0 0 .35em; }
+.card p  { font-size: .58em; line-height: 1.45; color: var(--ink-muted); margin: 0; }
+
+.stats { display: flex; gap: 2em; margin: .7em 0; }
+.stat .value {
+  display: block;
+  font-size: 1.9em;
+  font-weight: 680;
+  line-height: 1.15;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stat .label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .44em;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: .5em;
+}
+
+.pills { display: flex; flex-wrap: wrap; gap: .4em; margin: .6em 0; }
+.pill {
+  font-family: var(--font-mono);
+  font-size: .46em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .5em .9em;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  color: var(--ink-muted);
+}
+
+.note {
+  border-left: 2px solid var(--primary-1);
+  padding: .15em 0 .15em 1em;
+  margin: .7em 0;
+  font-size: .68em;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; align-items: start; }
+
+.reveal pre {
+  width: 100%;
+  box-shadow: none;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  font-size: .4em;
+}
+.reveal pre code { font-family: var(--font-mono); padding: 1em 1.2em; max-height: none; }
+
+/* ==========================================================================
+   CHROME: footer, slide number, progress
+   ========================================================================== */
+.deck-footer {
+  position: fixed;
+  left: 2.2em;
+  bottom: 1.4em;
+  z-index: 30;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  opacity: .75;
+}
+
+/* Hide the footer on the title and closing slides. */
+.reveal:has(section.title.present) ~ .deck-footer,
+.reveal:has(section.closing.present) ~ .deck-footer { display: none; }
+
+/* Without this the slide number renders as a blue underlined link. */
+.reveal .slide-number { background: transparent; font-family: var(--font-mono); font-size: 12px; }
+.reveal .slide-number a { color: var(--ink-muted); text-decoration: none; opacity: .7; }
+
+.reveal .progress { color: var(--primary-2); height: 2px; }
+
+.reveal .controls { color: var(--ink-muted); }
+
+@media print {
+  .backdrop { position: absolute; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+
+<body>
+<div class="backdrop"></div>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- TITLE ------------------------------------------------------------->
+    <section class="title">
+      <p class="kicker">{{KICKER}}</p>
+      <h1 class="grad">{{DECK_TITLE}}</h1>
+      <p class="muted" style="font-size:.72em; max-width:26ch;">{{DECK_SUBTITLE}}</p>
+      <p class="muted small" style="margin-top:2em;">{{PRESENTER}}, {{DATE}}</p>
+    </section>
+
+    <!-- CONTENT: cards ---------------------------------------------------->
+    <section>
+      <p class="kicker">{{SECTION_KICKER}}</p>
+      <h2>{{SLIDE_HEADLINE}}</h2>
+      <div class="cards c3">
+        <div class="card"><h3>{{CARD_1_TITLE}}</h3><p>{{CARD_1_BODY}}</p></div>
+        <div class="card"><h3>{{CARD_2_TITLE}}</h3><p>{{CARD_2_BODY}}</p></div>
+        <div class="card"><h3>{{CARD_3_TITLE}}</h3><p>{{CARD_3_BODY}}</p></div>
+      </div>
+      <p class="note">{{SUPPORTING_NOTE}}</p>
+    </section>
+
+    <!-- CONTENT: stats ---------------------------------------------------->
+    <section>
+      <p class="kicker">{{STATS_KICKER}}</p>
+      <h2>{{STATS_HEADLINE}}</h2>
+      <div class="stats">
+        <div class="stat"><span class="value grad">{{STAT_1}}</span><span class="label">{{STAT_1_LABEL}}</span></div>
+        <div class="stat"><span class="value grad">{{STAT_2}}</span><span class="label">{{STAT_2_LABEL}}</span></div>
+        <div class="stat"><span class="value grad">{{STAT_3}}</span><span class="label">{{STAT_3_LABEL}}</span></div>
+      </div>
+      <div class="pills">
+        <span class="pill">{{PILL_1}}</span>
+        <span class="pill">{{PILL_2}}</span>
+        <span class="pill">{{PILL_3}}</span>
+      </div>
+    </section>
+
+    <!-- CONTENT: two column ----------------------------------------------->
+    <section>
+      <p class="kicker">{{TWOCOL_KICKER}}</p>
+      <h2>{{TWOCOL_HEADLINE}}</h2>
+      <div class="two-col">
+        <div>
+          <h3>{{LEFT_TITLE}}</h3>
+          <p class="muted" style="font-size:.6em;">{{LEFT_BODY}}</p>
+        </div>
+        <div>
+          <h3>{{RIGHT_TITLE}}</h3>
+          <p class="muted" style="font-size:.6em;">{{RIGHT_BODY}}</p>
+        </div>
+      </div>
+      <aside class="notes">{{SPEAKER_NOTES}}</aside>
+    </section>
+
+    <!-- CLOSING ----------------------------------------------------------->
+    <section class="closing">
+      <p class="kicker">{{CLOSING_KICKER}}</p>
+      <h2 class="grad">{{CLOSING_LINE}}</h2>
+      <p class="muted" style="font-size:.66em;">{{CALL_TO_ACTION}}</p>
+      <p class="muted small" style="margin-top:1.6em;">{{CONTACT}}</p>
+    </section>
+
+  </div>
+</div>
+
+<div class="deck-footer">{{FOOTER_TEXT}}</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true, controls: true, controlsBackArrows: 'faded', progress: true,
+    slideNumber: 'c/t', center: true, transition: 'slide', backgroundTransition: 'fade',
+    width: 1280, height: 720, margin: 0.045, minScale: 0.2, maxScale: 2.0
+  });
+</script>
+</body>
+</html>

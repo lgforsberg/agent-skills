@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{DOCUMENT_TITLE}}</title>
+<style>
+/* ==========================================================================
+   BRAND CONTRACT
+   This block is the whole extension point. To brand this document, replace
+   these values and change nothing else. Defaults below are deliberately
+   neutral: usable, but not anyone's house style.
+   ========================================================================== */
+:root {
+  /* Page */
+  --page-size:      A4;              /* A4 | Letter */
+  --margin-top:     16mm;
+  --margin-side:    18mm;
+  --margin-bottom:  18mm;
+
+  /* Ink */
+  --ink:            #15181d;
+  --ink-muted:      #5a6472;
+  --rule:           #dde3e9;
+  --sheet:          #ffffff;
+
+  /* Accent */
+  --accent:         #2d4a63;
+  --accent-2:       #6b8fa8;
+  --accent-tint:    #eef2f6;
+
+  /* Cover field */
+  --cover-bg:       #15181d;
+  --cover-ink:      #ffffff;
+  --cover-muted:    #9aa5b4;
+
+  /* Type. A system stack is the safe default: it needs no network and cannot
+     silently fall back on a headless PDF host. Swap in brand faces here. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+
+  /* Measure */
+  --measure:        66ch;
+}
+
+/* ==========================================================================
+   PAGE + SHEET
+   ========================================================================== */
+@page {
+  size: var(--page-size);
+  margin: var(--margin-top) var(--margin-side) var(--margin-bottom);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: #e9ecef;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 10.5pt;
+  line-height: 1.55;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+/* One .sheet per printed page. */
+.sheet {
+  position: relative;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 12mm auto;
+  padding: var(--margin-top) var(--margin-side) var(--margin-bottom);
+  background: var(--sheet);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, .16);
+}
+
+/* ==========================================================================
+   COVER
+   Inset dark panel rather than full bleed: prints reliably inside @page
+   margins. For true full bleed, set @page margin to 0 and move the padding
+   onto .sheet, but then every flowed page loses its top and bottom margin.
+   ========================================================================== */
+.cover-panel {
+  min-height: 250mm;               /* explicit: flex covers collapse in print */
+  padding: 20mm 18mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--cover-bg);
+  color: var(--cover-ink);
+  /* Without this Chrome drops the dark field and prints white on white. */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cover-muted);
+  margin: 0 0 6mm;
+}
+
+.cover-title {
+  font-size: 30pt;
+  line-height: 1.12;
+  font-weight: 650;
+  letter-spacing: -.015em;
+  margin: 0;
+  max-width: 22ch;
+}
+
+.cover-subtitle {
+  font-size: 12pt;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--cover-muted);
+  margin: 5mm 0 0;
+  max-width: 46ch;
+}
+
+.accent-rule {
+  width: 46mm;
+  height: 3px;
+  margin: 8mm 0 0;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cover-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6mm 10mm;
+  padding-top: 8mm;
+  border-top: 1px solid rgba(255, 255, 255, .16);
+}
+
+.cover-meta dt {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cover-muted);
+  margin: 0 0 1.5mm;
+}
+
+.cover-meta dd { margin: 0; font-size: 10pt; }
+
+.confidentiality {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cover-muted);
+  margin: 6mm 0 0;
+}
+
+/* ==========================================================================
+   SECTIONS + BODY
+   ========================================================================== */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 3mm;
+}
+
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+h1, h2, h3 { font-weight: 640; letter-spacing: -.01em; break-after: avoid; }
+h1 { font-size: 20pt; line-height: 1.2;  margin: 0 0 5mm; }
+h2 { font-size: 14pt; line-height: 1.25; margin: 10mm 0 4mm; }
+h3 { font-size: 11pt; line-height: 1.3;  margin: 7mm 0 2.5mm; }
+
+p { margin: 0 0 4mm; max-width: var(--measure); }
+
+.lead {
+  font-size: 12pt;
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 54ch;
+  margin-bottom: 6mm;
+}
+
+.subhead {
+  font-size: 10pt;
+  color: var(--ink-muted);
+  max-width: 58ch;
+}
+
+a { color: var(--accent); text-decoration: none; }
+strong { font-weight: 620; }
+
+/* Accent bullets */
+ul.accent { list-style: none; padding: 0; margin: 0 0 5mm; max-width: var(--measure); }
+ul.accent li { position: relative; padding-left: 7mm; margin-bottom: 2.5mm; }
+ul.accent li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .62em;
+  width: 3.5mm;
+  height: 1.5px;
+  background: var(--accent);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+table { width: 100%; border-collapse: collapse; margin: 0 0 6mm; font-size: 9.5pt; }
+
+thead { display: table-header-group; }   /* repeat headers across pages */
+tr { break-inside: avoid; }
+
+th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  background: var(--accent-tint);
+  padding: 3mm 4mm;
+  border-bottom: 1px solid var(--rule);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+td { padding: 3mm 4mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+
+/* Money: tabular figures, right aligned, no orphan currency columns. */
+.cost-table td.num,
+.cost-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.cost-table tr.total td {
+  font-weight: 640;
+  border-top: 2px solid var(--ink);
+  border-bottom: none;
+}
+
+.info-table td:first-child {
+  width: 34%;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 8.5pt;
+}
+
+/* ==========================================================================
+   CALLOUT, METRICS, FIGURE
+   ========================================================================== */
+.callout {
+  break-inside: avoid;
+  padding: 5mm 6mm;
+  margin: 0 0 6mm;
+  background: var(--accent-tint);
+  border-left: 3px solid var(--accent);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.callout p:last-child { margin-bottom: 0; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; margin: 0 0 6mm; }
+.metric { break-inside: avoid; padding: 5mm; border: 1px solid var(--rule); }
+.metric .value {
+  display: block;
+  font-size: 20pt;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.metric .label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 2mm;
+}
+
+figure { break-inside: avoid; margin: 0 0 6mm; }
+figure img { width: 100%; height: auto; display: block; }
+figcaption {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: .08em;
+  color: var(--ink-muted);
+  margin-top: 2mm;
+}
+
+/* ==========================================================================
+   FOOTER + BREAKS
+   ========================================================================== */
+.print-footer { display: none; }
+
+.page-break { break-before: page; }
+
+@media print {
+  body { background: #fff; }
+
+  .sheet {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .sheet + .sheet { break-before: page; }
+
+  /* Repeats on every printed page. */
+  .print-footer {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: var(--font-mono);
+    font-size: 7pt;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  p { orphans: 3; widows: 3; }
+}
+</style>
+</head>
+<body>
+
+<!-- COVER ------------------------------------------------------------------>
+<section class="sheet">
+  <div class="cover-panel">
+    <div>
+      <p class="eyebrow">{{EYEBROW}}</p>
+      <h1 class="cover-title">{{DOCUMENT_TITLE}}</h1>
+      <p class="cover-subtitle">{{SUBTITLE}}</p>
+      <div class="accent-rule"></div>
+    </div>
+
+    <div>
+      <dl class="cover-meta">
+        <div><dt>Prepared for</dt><dd>{{RECIPIENT}}</dd></div>
+        <div><dt>Prepared by</dt><dd>{{AUTHOR}}</dd></div>
+        <div><dt>Date</dt><dd>{{DATE}}</dd></div>
+        <div><dt>Reference</dt><dd>{{REFERENCE}}</dd></div>
+      </dl>
+      <p class="confidentiality">{{CONFIDENTIALITY}}</p>
+    </div>
+  </div>
+</section>
+
+<!-- BODY ------------------------------------------------------------------->
+<section class="sheet">
+
+  <p class="section-label">{{SECTION_LABEL}}</p>
+  <h2>{{SECTION_HEADING}}</h2>
+
+  <p class="lead">{{LEAD_PARAGRAPH}}</p>
+  <p>{{BODY_PARAGRAPH}}</p>
+
+  <ul class="accent">
+    <li>{{BULLET_ONE}}</li>
+    <li>{{BULLET_TWO}}</li>
+    <li>{{BULLET_THREE}}</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>{{CALLOUT_TITLE}}</strong> {{CALLOUT_BODY}}</p>
+  </div>
+
+  <h3>{{SUBSECTION_HEADING}}</h3>
+
+  <table class="info-table">
+    <tbody>
+      <tr><td>{{KEY_ONE}}</td><td>{{VALUE_ONE}}</td></tr>
+      <tr><td>{{KEY_TWO}}</td><td>{{VALUE_TWO}}</td></tr>
+      <tr><td>{{KEY_THREE}}</td><td>{{VALUE_THREE}}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="metrics">
+    <div class="metric"><span class="value">{{METRIC_1}}</span><span class="label">{{METRIC_1_LABEL}}</span></div>
+    <div class="metric"><span class="value">{{METRIC_2}}</span><span class="label">{{METRIC_2_LABEL}}</span></div>
+    <div class="metric"><span class="value">{{METRIC_3}}</span><span class="label">{{METRIC_3_LABEL}}</span></div>
+  </div>
+
+</section>
+
+<!-- COSTS ------------------------------------------------------------------>
+<section class="sheet">
+
+  <p class="section-label">{{COST_SECTION_LABEL}}</p>
+  <h2>{{COST_HEADING}}</h2>
+
+  <p class="subhead">{{COST_INTRO}}</p>
+
+  <table class="cost-table">
+    <thead>
+      <tr>
+        <th>{{COL_ITEM}}</th>
+        <th class="num">{{COL_QTY}}</th>
+        <th class="num">{{COL_RATE}}</th>
+        <th class="num">{{COL_AMOUNT}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>{{ITEM_1}}</td><td class="num">{{QTY_1}}</td><td class="num">{{RATE_1}}</td><td class="num">{{AMOUNT_1}}</td></tr>
+      <tr><td>{{ITEM_2}}</td><td class="num">{{QTY_2}}</td><td class="num">{{RATE_2}}</td><td class="num">{{AMOUNT_2}}</td></tr>
+      <tr class="total"><td>{{TOTAL_LABEL}}</td><td class="num"></td><td class="num"></td><td class="num">{{TOTAL_AMOUNT}}</td></tr>
+    </tbody>
+  </table>
+
+  <p class="subhead">{{COST_NOTE}}</p>
+
+</section>
+
+<!-- Repeats on every printed page. -->
+<div class="print-footer">{{FOOTER_TEXT}}</div>
+
+</body>
+</html>
