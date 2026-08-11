@@ -25,20 +25,36 @@ repo. See the brand contract table in either skill.
 
 ### Installing these
 
-Clone the repo and symlink a skill into your agent's skills directory:
+The skills CLI discovers `SKILL.md` files recursively, so the top-level-per-skill
+layout here installs directly:
 
 ```bash
-git clone git@github.com:lgforsberg/agent-skills.git
-ln -s "$PWD/agent-skills/server-rendered-web" ~/.cursor/skills/server-rendered-web
+# List available skills
+npx skills add lgforsberg/agent-skills --list
+
+# Install one skill globally for Cursor
+npx skills add lgforsberg/agent-skills \
+  --skill server-rendered-web \
+  --global \
+  --agent cursor
+
+# Install several
+npx skills add lgforsberg/agent-skills \
+  --skill server-rendered-web \
+  --skill agent-integration-design \
+  --skill mcp-server-builder \
+  --global \
+  --agent cursor
 ```
 
-Or copy the folder if you would rather pin a version.
+For local development of this repo, clone it and symlink (or use `--copy`) into
+your agent skills directory instead.
 
 ### Layout
 
 One folder per skill, each with a `SKILL.md` carrying `name` and `description`
 frontmatter. Supporting `reference.md`, `examples.md`, or `scripts/` live beside
-it in the same folder.
+it in the same folder. No `skills/` wrapper is required.
 
 ## Other skills I use
 
