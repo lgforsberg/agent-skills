@@ -11,6 +11,7 @@ Licensed MIT, see [LICENSE](LICENSE).
 - [`mcp-server-builder`](mcp-server-builder/SKILL.md): Build remote MCP servers in Go over Streamable HTTP, as real production services rather than local command wrappers.
 - [`html-document`](html-document/SKILL.md): Print-first HTML documents that export cleanly to PDF: proposals, quotes, reports, letters. Ships a neutral template.
 - [`html-presentation`](html-presentation/SKILL.md): Editorial or cinematic reveal.js decks as one self-contained HTML file. Ships a neutral template.
+- [`technical-product-writing`](technical-product-writing/SKILL.md): Accurate product, system, service, and sales writing that sits between documentation and marketing copy.
 
 `agent-integration-design` decides whether to build an MCP server at all;
 `mcp-server-builder` takes over once that decision is made.
@@ -102,6 +103,22 @@ npx skills add addyosmani/agent-skills \
 npx skills add github/awesome-copilot \
   --skill sql-code-review \
   --global --agent cursor
+
+npx skills add github/awesome-copilot \
+  --skill documentation-writer \
+  --global \
+  --agent cursor
+
+npx skills add coreyhaines31/marketingskills \
+  --skill product-marketing \
+  --skill copywriting \
+  --skill copy-editing \
+  --global \
+  --agent cursor
+
+npx skills add content-designer/ux-writing-skill \
+  --global \
+  --agent cursor
 
 npx skills add trailofbits/skills \
   --skill differential-review \
